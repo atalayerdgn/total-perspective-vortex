@@ -1,0 +1,7 @@
+mne
+numpy
+scikit-learn
+matplotlib
+joblib
+pyriemann
+pathlib2

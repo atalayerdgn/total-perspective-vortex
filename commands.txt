@@ -1,9 +1,0 @@
-# Image oluştur
-docker build -t eeg-bci-app .
-
-# Compose ile çalıştır (önerilen)
-docker-compose up -d bci-app
-docker-compose exec bci-app /bin/bash
-
-# Container içinde uygulamayı çalıştır
-python app/mybci.py

@@ -190,16 +190,10 @@ class EEGPRocessor:
         return epochs
     @staticmethod
     def save_epochs(epochs, path):
-        """        
-        Save epochs to a specified path.
-        Args:
-            epochs (mne.Epochs): The epochs to save.
-            path (Path): The path to save the epochs.
-        """
-        os.makedirs(os.path.dirname(path), exist_ok=True)
+        os.makedirs("../../data/epochs", exist_ok=True)
         epochs.save(path, overwrite=True)
     def run(subjects, runs):
-        path = "../data/MNE-eegbci-data/files/eegmmidb/1.0.0/"
+        path = "../../data/MNE-eegbci-data/files/eegmmidb/1.0.0"
         raws = []
         for subject in subjects:
             for run in runs:
@@ -211,27 +205,36 @@ class EEGPRocessor:
             raw_concatenated._data[:] = cwt
             events, task_id = EEGPRocessor.get_events(raw_concatenated, run)
             epochs = EEGPRocessor.create_epochs(raw_concatenated, events, task_id)
-            EEGPRocessor.save_epochs(epochs, f"../data/epochs/S{subject:03d}-epo.fif")
+            EEGPRocessor.save_epochs(epochs, f"../../data/epochs/S{subject:03d}-epo.fif")
         return subjects
 
 if __name__ == "__main__":
-    print("=== EEG Data Processor ===")
-    print("1. Veri indirme (Download EEG data)")
-    print("2. Veri işleme (Process downloaded data)")
-    print()
+    import sys
+    if len(sys.argv) > 1:
+        if sys.argv[1] == "process":
+            runs = [int(run) for run in sys.argv[2].split(',')]
+            subject_scale = sys.argv[3]
+            
+            if subject_scale == 'all':
+                subjects = range(1, 110)
+            else:
+                subjects = []
+                for part in subject_scale.split(','):
+                    if '-' in part:
+                        start, end = map(int, part.split('-'))
+                        subjects.extend(range(start, end + 1))
+                    else:
+                        subjects.append(int(part))
+            subjects = EEGPRocessor.run(subjects, runs)
+            
+            with open("../subjects.txt", "w") as f:
+                for subject in subjects:
+                    f.write(f"{subject}\n")
+            exit(0)
     
     choice = input("Seçiminizi yapın (1 veya 2): ").strip()
     
     if choice == "1":
-        print("\n=== VERİ İNDİRME MODU ===")
-        print("Motor imagery task runs:")
-        print("- Run 3,7,11: left fist vs right fist (real movement)")
-        print("- Run 4,8,12: left fist vs right fist (imagery)")
-        print("- Run 5,9,13: both fists vs both feet (real movement)")
-        print("- Run 6,10,14: both fists vs both feet (imagery)")
-        print()
-        
-        # Denek seçimi
         subject_input = input("Denek numaraları (örn: 1,2,3 veya 1-5): ").strip()
         if not subject_input:
             subjects = [1]
@@ -243,30 +246,14 @@ if __name__ == "__main__":
                     subjects.extend(range(start, end + 1))
                 else:
                     subjects.append(int(part))
-        
-        # Run seçimi
         runs_input = input("Run numaraları (örn: 3,4 veya 4,8,12): ").strip()
         if not runs_input:
             runs = [3, 4]
         else:
             runs = [int(run) for run in runs_input.split(',')]
-        
-        # Veriyi indir
         downloaded_files = download_eeg_data(subjects=subjects, runs=runs)
-        
-        if downloaded_files:
-            print(f"\n✅ {len(downloaded_files)} dosya başarıyla indirildi!")
-        else:
-            print("\n❌ İndirme başarısız!")
             
     elif choice == "2":
-        print("\n=== VERİ İŞLEME MODU ===")
-        print("open-close fist events are 3,7,11")
-        print("open-close fist or foot events are 5,9,13")
-        print("imagine opening-closing fist events are 4,8,12")
-        print("imagine opening-closing fist or foot events are 6,10,14")
-        print("If you want to process all subjects, enter 'all' for subject scale.")
-        
         runs = input("Enter runs (comma-separated, e.g., 4,6): ")
         subject_scale = input("Enter subject scale (e.g., 1-20 or 'all'): ")
         

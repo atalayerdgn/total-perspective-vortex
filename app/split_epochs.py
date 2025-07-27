@@ -1,22 +1,10 @@
-import os
+
 import shutil
 import random
 from pathlib import Path
 
-def split_epochs_files(epochs_dir="data/epochs", train_ratio=0.8, random_seed=42):
-    """
-    Split epoch files into train and test sets.
-    
-    Args:
-        epochs_dir (str): Path to the epochs directory
-        train_ratio (float): Ratio of files to use for training (0.0 to 1.0)
-        random_seed (int): Random seed for reproducibility
-    """
-    
-    # Set random seed for reproducibility
+def split_epochs_files(epochs_dir="../data/epochs", train_ratio=0.8, random_seed=42):
     random.seed(random_seed)
-    
-    # Get all epoch files
     epochs_path = Path(epochs_dir)
     epoch_files = [f for f in epochs_path.glob("*.fif")]
     
@@ -28,13 +16,10 @@ def split_epochs_files(epochs_dir="data/epochs", train_ratio=0.8, random_seed=42
     for f in epoch_files:
         print(f"  - {f.name}")
     
-    # Shuffle files for random split
     random.shuffle(epoch_files)
     
-    # Calculate split point
     split_idx = int(len(epoch_files) * train_ratio)
     
-    # Split files
     train_files = epoch_files[:split_idx]
     test_files = epoch_files[split_idx:]
     
@@ -47,14 +32,12 @@ def split_epochs_files(epochs_dir="data/epochs", train_ratio=0.8, random_seed=42
     for f in test_files:
         print(f"  - {f.name}")
     
-    # Create train and test directories
-    train_dir = epochs_path / "train"
-    test_dir = epochs_path / "test"
+    train_dir = Path("../data/train")
+    test_dir = Path("../data/test")
     
     train_dir.mkdir(exist_ok=True)
     test_dir.mkdir(exist_ok=True)
     
-    # Move files to appropriate directories
     print(f"\nMoving files...")
     
     for f in train_files:

@@ -13,48 +13,22 @@ services:
       dockerfile: Dockerfile
     container_name: eeg-bci-processor
     volumes:
-      # Named volume for persistent data storage
-      - eeg_data:/app/data
-      # Named volume for persistent models
+      - ./data:/app/data
       - eeg_models:/app/models
-      # Optional: Mount local directory for development
-      # - ./data:/app/data
-      # - ./models:/app/models
     environment:
       - PYTHONPATH=/app
       - PYTHONUNBUFFERED=1
-    # Interactive mode for training/testing
     stdin_open: true
     tty: true
-    # Uncomment below if you want to expose a port for web interface
-    # ports:
-    #   - "8000:8000"
-    
-    # Different run modes - uncomment as needed
-    
-    # For training mode
-    # command: ["python", "app/mybci.py"]
-    
-    # For processing epochs
-    # command: ["python", "app/processing/Processor.py"]
-    
-    # For splitting epochs
-    # command: ["python", "app/split_epochs.py"]
-    
-    # For bash access
     command: ["/bin/bash"]
-
-  # Optional: Add a Jupyter notebook service for development
   jupyter:
     build: 
       context: .
       dockerfile: Dockerfile
     container_name: eeg-jupyter
     volumes:
-      # Use same named volumes for consistency
       - eeg_data:/app/data
       - eeg_models:/app/models
-      # Mount source code for development
       - ./app:/app/app
     ports:
       - "8888:8888"

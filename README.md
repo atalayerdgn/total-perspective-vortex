@@ -1,4 +1,4 @@
-# Brain-Computer Interface (BCI) EEG Processing System
+# Total-perspective-Vortex
 
 A comprehensive Brain-Computer Interface system for processing and analyzing EEG (Electroencephalogram) data using machine learning techniques. This project implements advanced signal processing pipelines including Common Spatial Patterns (CSP), ANOVA-F feature selection, and Riemannian geometry-based classification.
 
